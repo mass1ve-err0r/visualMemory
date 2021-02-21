@@ -28,9 +28,7 @@ public class Preferences {
         return INSTANCE;
     }
 
-    public synchronized int getValueForKey(String key) {
-        return Integer.parseInt(defaults.getProperty(key));
-    }
+    public synchronized String getValueForKey(String key) { return defaults.getProperty(key); }
 
     public synchronized void setValueForKey(String key, int value) {
         defaults.setProperty(key, String.valueOf(value));
@@ -45,13 +43,15 @@ public class Preferences {
         }
     }
 
-    public synchronized void synchronize() {
+    public synchronized boolean synchronize() {
         try (FileOutputStream fos = new FileOutputStream("visualMemory.prefs")) {
             defaults.store(fos, null);
         } catch (IOException e) {
             e.printStackTrace();
+            return false;
         }
         readPreferencesFile();
+        return true;
     }
 
 
