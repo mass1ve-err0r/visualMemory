@@ -21,6 +21,7 @@ public class Launcher extends Application {
     public void start(Stage stage) throws Exception {
         FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("FXMLs/Home.fxml"));
         Pane root = loader.load();
+        root.getStylesheets().add(String.valueOf(getClass().getClassLoader().getResource("visualMemory.css")));
         ((HomeViewController)loader.getController()).setHostServices(getHostServices());
         Scene scene = new Scene(root);
         stage.setScene(scene);
