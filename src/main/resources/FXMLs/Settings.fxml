@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane fx:id="apRoot"
+            prefHeight="400.0"
+            prefWidth="400.0"
+            xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="de.saadatbaig.visualMemory.Controllers.SettingsViewController">
+    <children>
+        <Separator layoutX="81.0" layoutY="371.0" prefWidth="200.0" AnchorPane.bottomAnchor="30.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" />
+        <Label fx:id="labelBottomText" alignment="CENTER" contentDisplay="CENTER" layoutX="14.0" layoutY="219.0" text="Made with ♥︎ in Germany" textAlignment="CENTER" textFill="#2a2a2a" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0">
+            <font>
+                <Font size="14.0" />
+            </font>
+        </Label>
+        <TextField fx:id="textfieldChar" layoutX="50.0" layoutY="96.0" promptText="char size (default: 8bits)" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="75.0" />
+        <TextField fx:id="textfieldShort" layoutX="108.0" layoutY="126.0" promptText="short size (default: 16bits)" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="125.0">
+            <font>
+                <Font size="14.0" />
+            </font>
+        </TextField>
+        <TextField fx:id="textfieldInt" layoutX="50.0" layoutY="214.0" promptText="int size (default: 32bits)" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="175.0">
+            <font>
+                <Font size="14.0" />
+            </font>
+        </TextField>
+        <TextField fx:id="textfieldLong" layoutX="60.0" layoutY="224.0" promptText="long size (default: 64bits)" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="225.0">
+            <font>
+                <Font size="14.0" />
+            </font>
+        </TextField>
+        <Button fx:id="buttonSave" alignment="CENTER" layoutX="173.0" layoutY="302.0" mnemonicParsing="false" text="Save" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="50.0">
+            <font>
+                <Font size="14.0" />
+            </font>
+        </Button>
+        <Label alignment="CENTER" disable="true" layoutX="14.0" layoutY="14.0" text="Set the type sizes here in bits.&#10;Remember: 1 byte = 8 bits&#10;" textAlignment="CENTER" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+            <font>
+                <Font name="System Italic" size="14.0" />
+            </font>
+        </Label>
+    </children>
+</AnchorPane>
