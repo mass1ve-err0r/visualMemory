@@ -1,0 +1,4 @@
+sz_char=8
+sz_short=16
+sz_int=32
+sz_long=64
