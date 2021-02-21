@@ -47,13 +47,16 @@ public class HomeViewController {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("FXMLs/Settings.fxml"));
             Pane settingsPane = loader.load();
+            settingsPane.getStylesheets().add(String.valueOf(getClass().getClassLoader().getResource("visualMemory.css")));
             Stage settingsStage = new Stage();
             settingsStage.initModality(Modality.APPLICATION_MODAL);
             settingsStage.initStyle(StageStyle.DECORATED);
             settingsStage.setTitle("visualMemory - Settings");
             settingsStage.setScene(new Scene(settingsPane));
+            settingsStage.setResizable(false);
             settingsStage.show();
         } catch (IOException e) {
+            System.out.println("[visualMemory][E]: Failed to create SettingsPane!");
             e.printStackTrace();
         }
         mouseEvent.consume();
