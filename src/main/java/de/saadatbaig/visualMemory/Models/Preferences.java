@@ -1,3 +1,9 @@
+/*
+ * Project: visualMemory
+ * Author:  Saadat M. Baig
+ * Date:    21.02.2021
+ * License: BSD-3-Clause-Attribution
+ */
 package de.saadatbaig.visualMemory.Models;
 
 import java.io.FileInputStream;
@@ -34,7 +40,8 @@ public class Preferences {
         try (FileInputStream fis = new FileInputStream("visualMemory.prefs")) {
             defaults.load(fis);
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("[visualMemory][E]: Preference file not found! Exiting...");
+            System.exit(1);
         }
     }
 
