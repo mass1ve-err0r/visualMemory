@@ -6,13 +6,16 @@
  */
 package de.saadatbaig.visualMemory.Controllers;
 
+import de.saadatbaig.visualMemory.Views.BlockView;
 import javafx.application.HostServices;
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.Tooltip;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
@@ -21,6 +24,8 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
 import java.io.IOException;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 
 
 public class HomeViewController {
@@ -29,6 +34,7 @@ public class HomeViewController {
     @FXML public Button buttonSettings;
     @FXML public Label labelBottomText;
     HostServices _services;
+    int sessions = 1;
 
     public HomeViewController() {
         Platform.runLater(() ->labelBottomText.setTooltip(new Tooltip("Click me to view the source code!")));
@@ -43,7 +49,7 @@ public class HomeViewController {
         mouseEvent.consume();
     }
 
-    public void openSettings(MouseEvent mouseEvent) {
+    public void openSettings(ActionEvent evt) {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("FXMLs/Settings.fxml"));
             Pane settingsPane = loader.load();
@@ -59,7 +65,31 @@ public class HomeViewController {
             System.out.println("[visualMemory][E]: Failed to create SettingsPane!");
             e.printStackTrace();
         }
-        mouseEvent.consume();
+        evt.consume();
+    }
+
+    public void createBlockView(ActionEvent evt) {
+        AtomicInteger sz = new AtomicInteger(15);
+        TextInputDialog dialog = new TextInputDialog("15");
+        dialog.setTitle("visualMemory");
+        dialog.setHeaderText("Set virtual memory size");
+        dialog.setContentText("Virtual size in bytes (default: 15) :");
+        Optional<String> result = dialog.showAndWait();
+        result.ifPresent(c_sz -> {
+            if (Integer.parseInt(c_sz) >= 15) { sz.set(Integer.parseInt(c_sz)); }
+        });
+
+        BlockView view = new BlockView(sz.get());
+        Stage settingsStage = new Stage();
+        settingsStage.initModality(Modality.WINDOW_MODAL);
+        settingsStage.initStyle(StageStyle.DECORATED);
+        settingsStage.setTitle(String.format("visualMemory - Playground #%d", sessions));
+        sessions++;
+        settingsStage.setScene(new Scene(view.asParent()));
+        settingsStage.setResizable(false);
+        settingsStage.show();
+
+        evt.consume();
     }
 
 
