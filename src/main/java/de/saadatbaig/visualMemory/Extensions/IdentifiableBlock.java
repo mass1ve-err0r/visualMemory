@@ -50,6 +50,9 @@ public class IdentifiableBlock extends Button {
     }
 
     public String getColor() { return _colorHex; }
+    public int getIdentifier() { return _id; }
+    public int getStartLocation() { return _startBlock; }
+    public int getEndLocation() { return _endBlock; }
 
 
     /* End */
