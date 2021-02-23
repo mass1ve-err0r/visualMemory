@@ -28,6 +28,7 @@ public class BlockView {
     private Label _availableSpace, _pointerLocation;
     private GridPane _grid;
     private TextField _inputField;
+    private TextField _outputField;
     private int currentPointer, currentId, _maxSize, _usedSize;
     private String _windowName;
 
@@ -96,8 +97,10 @@ public class BlockView {
                         if (components.length == 2) {
                             Tuple<Integer, String> blockType = getArgumentValue(components[1]);
                             setBlock(blockType);
-                            System.out.println("done?");
+                            System.out.println("new with 2");
                         } else if (components.length == 3) {
+                            Tuple<Integer, String> blockType = getArgumentValue(components[1]);
+                            setBlock2(blockType, Integer.parseInt(components[2]));
                             System.out.println("new with 3");
                         }
                         break;
@@ -117,12 +120,16 @@ public class BlockView {
                         break;
                     case "read":
                         if (components.length == 2) {
+                            readBlock(Integer.parseInt(components[1]));
                             System.out.println("read with 2");
                         }
                         break;
                 }
             }
         });
+
+        _outputField = new TextField("Last Read:");
+        _outputField.setDisable(true);
 
         _view = new VBox();
         _view.setSpacing(5);
@@ -133,6 +140,7 @@ public class BlockView {
         _container.setContent(_grid);
         _view.getChildren().add(_container);
         _view.getChildren().add(_inputField);
+        _view.getChildren().add(_outputField);
         Platform.runLater(() ->_inputField.requestFocus());
     }
 
@@ -140,7 +148,7 @@ public class BlockView {
         int startpos = currentPointer;
         int endpos = currentPointer + blockInfo.getFirst() -1;
         if (endpos > _maxSize-1) {
-            showWarning(Alert.AlertType.WARNING, "Cannot allocate! We're low on memory!");
+            showWarning(Alert.AlertType.WARNING, "Memory Failure", "Cannot allocate! We're low on memory!");
             return;
         }
         for (int i = 0; i < blockInfo.getFirst(); i++) {
@@ -153,6 +161,55 @@ public class BlockView {
         _usedSize += blockInfo.getFirst();
         _availableSpace.setText(String.format("Used: %d/%d", _usedSize, _maxSize));
         _pointerLocation.setText(String.format("Pointer: %d", currentPointer));
+    }
+
+    private void setBlock2(Tuple<Integer, String> blockInfo, int pos) {
+        int startpos = pos;
+        int endpos = pos + blockInfo.getFirst() -1;
+        int alreadyoccupied = 0;
+        if (endpos > _maxSize-1) {
+            showWarning(Alert.AlertType.WARNING, "Memory Failure", "Cannot allocate! We're low on memory!");
+            return;
+        }
+        for (int i = 0; i < blockInfo.getFirst(); i++) {
+            IdentifiableBlock block = (IdentifiableBlock) _grid.getChildren().get(pos);
+            if (block.getIdentifier() != -1) { alreadyoccupied++; }
+            block.refreshBlockData(currentId, startpos, endpos, blockInfo.getSecond());
+            _grid.getChildren().set(pos, block);
+            pos++;
+        }
+        currentId++;
+        _usedSize += (blockInfo.getFirst() - alreadyoccupied);
+        _availableSpace.setText(String.format("Used: %d/%d", _usedSize, _maxSize));
+    }
+
+    private void readBlock(int pos) {
+        if (pos > _maxSize-1 || pos < 0) {
+            showWarning(Alert.AlertType.ERROR, "Read Failure", "Address is out of bound!");
+            setLastRead("Read Error");
+            return;
+        }
+        IdentifiableBlock block = (IdentifiableBlock) _grid.getChildren().get(pos);
+        int targetId = block.getIdentifier();
+        if (targetId == -1) {
+            setLastRead("Empty");
+            return;
+        }
+        int start = block.getStartLocation();
+        int end = block.getEndLocation();
+        for (int i = start; i < end; i++) {
+            block = (IdentifiableBlock) _grid.getChildren().get(i);
+            if (targetId != block.getIdentifier()) {
+                showWarning(Alert.AlertType.ERROR, "Read Failure", "Block is corrupted! Cannot read original block.");
+                setLastRead("Block Error");
+                return;
+            }
+        }
+        setLastRead("Success");
+    }
+
+    private void setLastRead(String message) {
+        _outputField.setText(String.format("Last Read: %s", message));
     }
 
     private Tuple<Integer, String> getArgumentValue(String s) {
@@ -169,10 +226,10 @@ public class BlockView {
         return null;
     }
 
-    private void showWarning(Alert.AlertType type, String message) {
+    private void showWarning(Alert.AlertType type, String header, String message) {
         Alert alert = new Alert(type);
         alert.setTitle(String.format("%s - Error", _windowName));
-        alert.setHeaderText("Memory Failure");
+        alert.setHeaderText(header);
         alert.setContentText(message);
 
         alert.showAndWait();
