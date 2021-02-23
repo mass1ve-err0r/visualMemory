@@ -10,24 +10,32 @@ import de.saadatbaig.visualMemory.Extensions.IdentifiableBlock;
 import de.saadatbaig.visualMemory.Utils.Tuple;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
-import javafx.scene.control.ScrollPane;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
 
 
 public class BlockView {
 
     private VBox _view;
     private ScrollPane _container;
+    private HBox _info;
+    private Label _availableSpace, _pointerLocation;
     private GridPane _grid;
     private TextField _inputField;
-    private int currentPointer, currentId;
+    private int currentPointer, currentId, _maxSize, _usedSize;
+    private String _windowName;
 
-    public BlockView(int sz) {
+    public BlockView(String name, int sz) {
+        _windowName = name;
         currentPointer = 0;
+        _maxSize = sz*sz;
+        _usedSize = 0;
         initGUI(sz);
     }
 
@@ -37,6 +45,15 @@ public class BlockView {
         _container = new ScrollPane();
         _container.setMaxSize(500, 500);
         _container.setPannable(true);
+
+        _availableSpace = new Label(String.format("Used: %d/%d", _usedSize, _maxSize));
+        _availableSpace.fontProperty().set(Font.font(14));
+        _pointerLocation = new Label(String.format("Pointer: %d", currentPointer));
+        _pointerLocation.fontProperty().set(Font.font(14));
+        _info = new HBox(25);
+        _info.setAlignment(Pos.CENTER);
+        _info.getChildren().addAll(_availableSpace, _pointerLocation);
+
 
         _grid = new GridPane();
         _grid.setHgap(1);
@@ -68,6 +85,7 @@ public class BlockView {
             }
         }
 
+        //TODO: Continue here later with proper input parsing
         _inputField = new TextField();
         _inputField.setPromptText("Enter command here");
         _inputField.onKeyPressedProperty().set(evt -> {
@@ -110,6 +128,8 @@ public class BlockView {
         _view.setSpacing(5);
         _view.setPadding(new Insets(10));
 
+        _view.getChildren().add(_info);
+
         _container.setContent(_grid);
         _view.getChildren().add(_container);
         _view.getChildren().add(_inputField);
@@ -119,6 +139,10 @@ public class BlockView {
     private void setBlock(Tuple<Integer, String> blockInfo) {
         int startpos = currentPointer;
         int endpos = currentPointer + blockInfo.getFirst() -1;
+        if (endpos > _maxSize-1) {
+            showWarning(Alert.AlertType.WARNING, "Cannot allocate! We're low on memory!");
+            return;
+        }
         for (int i = 0; i < blockInfo.getFirst(); i++) {
             IdentifiableBlock block = (IdentifiableBlock) _grid.getChildren().get(currentPointer);
             block.refreshBlockData(currentId, startpos, endpos, blockInfo.getSecond());
@@ -126,6 +150,9 @@ public class BlockView {
             currentPointer++;
         }
         currentId++;
+        _usedSize += blockInfo.getFirst();
+        _availableSpace.setText(String.format("Used: %d/%d", _usedSize, _maxSize));
+        _pointerLocation.setText(String.format("Pointer: %d", currentPointer));
     }
 
     private Tuple<Integer, String> getArgumentValue(String s) {
@@ -140,6 +167,15 @@ public class BlockView {
                 return new Tuple<>(8, "#78DCE8");
         }
         return null;
+    }
+
+    private void showWarning(Alert.AlertType type, String message) {
+        Alert alert = new Alert(type);
+        alert.setTitle(String.format("%s - Error", _windowName));
+        alert.setHeaderText("Memory Failure");
+        alert.setContentText(message);
+
+        alert.showAndWait();
     }
 
 
