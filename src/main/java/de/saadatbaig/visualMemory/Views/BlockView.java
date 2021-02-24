@@ -23,7 +23,6 @@ import javafx.scene.text.Font;
 public class BlockView {
 
     private VBox _view;
-    private ScrollPane _container;
     private HBox _info;
     private Label _availableSpace, _pointerLocation;
     private GridPane _grid;
@@ -43,10 +42,6 @@ public class BlockView {
     public Parent asParent() { return _view; }
 
     private void initGUI(int size) {
-        _container = new ScrollPane();
-        _container.setMaxSize(500, 500);
-        _container.setPannable(true);
-
         _availableSpace = new Label(String.format("Used: %d/%d", _usedSize, _maxSize));
         _availableSpace.fontProperty().set(Font.font(14));
         _pointerLocation = new Label(String.format("Pointer: %d", currentPointer));
@@ -97,11 +92,9 @@ public class BlockView {
                         if (components.length == 2) {
                             Tuple<Integer, String> blockType = getArgumentValue(components[1]);
                             setBlock(blockType);
-                            System.out.println("new with 2");
                         } else if (components.length == 3) {
                             Tuple<Integer, String> blockType = getArgumentValue(components[1]);
                             setBlock2(blockType, Integer.parseInt(components[2]));
-                            System.out.println("new with 3");
                         }
                         break;
                     case "malloc":
@@ -128,7 +121,7 @@ public class BlockView {
             }
         });
 
-        _outputField = new TextField("Last Read:");
+        _outputField = new TextField("read:");
         _outputField.setDisable(true);
 
         _view = new VBox();
@@ -137,8 +130,7 @@ public class BlockView {
 
         _view.getChildren().add(_info);
 
-        _container.setContent(_grid);
-        _view.getChildren().add(_container);
+        _view.getChildren().add(_grid);
         _view.getChildren().add(_inputField);
         _view.getChildren().add(_outputField);
         Platform.runLater(() ->_inputField.requestFocus());
