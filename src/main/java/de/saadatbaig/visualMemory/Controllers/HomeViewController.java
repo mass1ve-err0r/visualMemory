@@ -72,22 +72,21 @@ public class HomeViewController {
         AtomicInteger sz = new AtomicInteger(10);
         TextInputDialog dialog = new TextInputDialog("10");
         dialog.setTitle("visualMemory");
-        dialog.setHeaderText("Set virtual memory size");
-        dialog.setContentText("Virtual size in bytes (default: 10) :");
+        dialog.setHeaderText("Set virtual memory size.\nDefaults to 10, maximum allowed/ recommended is 35.");
+        dialog.setContentText("Virtual size in bytes:");
         Optional<String> result = dialog.showAndWait();
         result.ifPresent(c_sz -> {
-            if (Integer.parseInt(c_sz) > 10) { sz.set(Integer.parseInt(c_sz)); }
+            if (Integer.parseInt(c_sz) > 10 && Integer.parseInt(c_sz) < 36) { sz.set(Integer.parseInt(c_sz)); }
+            BlockView view = new BlockView(String.format("Playground #%d", sessions), sz.get());
+            Stage settingsStage = new Stage();
+            settingsStage.initModality(Modality.WINDOW_MODAL);
+            settingsStage.initStyle(StageStyle.DECORATED);
+            settingsStage.setTitle(String.format("Playground #%d", sessions));
+            sessions++;
+            settingsStage.setScene(new Scene(view.asParent()));
+            settingsStage.setResizable(false);
+            settingsStage.show();
         });
-
-        BlockView view = new BlockView(String.format("Playground #%d", sessions), sz.get());
-        Stage settingsStage = new Stage();
-        settingsStage.initModality(Modality.WINDOW_MODAL);
-        settingsStage.initStyle(StageStyle.DECORATED);
-        settingsStage.setTitle(String.format("Playground #%d", sessions));
-        sessions++;
-        settingsStage.setScene(new Scene(view.asParent()));
-        settingsStage.setResizable(false);
-        settingsStage.show();
 
         evt.consume();
     }
